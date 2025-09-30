@@ -22,7 +22,7 @@ from minitorch.operators import (
     relu,
     relu_back,
     sigmoid,
-    sum,
+    sum, is_close,
 )
 
 from .strategies import assert_close, small_floats
@@ -107,14 +107,18 @@ def test_sigmoid(a: float) -> None:
     * It crosses 0 at 0.5
     * It is  strictly increasing.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    assert 0 <= sigmoid(a) <= 1                         # always between 0.0 and 1.0.
+    assert_close(1 - sigmoid(a), sigmoid(-a))           # minus sigmoid is the same as sigmoid of the negative
+    assert_close(sigmoid(0), 0.5)                    # It crosses 0 at 0.5
+    assert sigmoid(a) <= sigmoid(a + 1e-3)              # strictly increasing
 
 
 @pytest.mark.task0_2
 @given(small_floats, small_floats, small_floats)
 def test_transitive(a: float, b: float, c: float) -> None:
     "Test the transitive property of less-than (a < b and b < c implies a < c)"
-    raise NotImplementedError("Need to include this file from past assignment.")
+    if lt(a, b) and lt(b, c):
+        assert lt(a, c)
 
 
 @pytest.mark.task0_2
@@ -123,7 +127,11 @@ def test_symmetric() -> None:
     Write a test that ensures that :func:`minitorch.operators.mul` is symmetric, i.e.
     gives the same value regardless of the order of its input.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    list1 = [-1.79, -1, 0, 1, 1.79]
+    list2 = [-3.14, -2.28, 2.28, 3.14]
+    for a in list1:
+        for b in list2:
+            assert mul(a, b) == mul(b, a)
 
 
 @pytest.mark.task0_2
@@ -132,7 +140,13 @@ def test_distribute() -> None:
     Write a test that ensures that your operators distribute, i.e.
     :math:`z \times (x + y) = z \times x + z \times y`
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    list1 = [-1.79, -1, 0, 1, 1.79]
+    list2 = [-3.14, -2.28, 0, 2.28, 3.14]
+    list3 = [2, 1, 0, -1, -2]
+    for x in list1:
+        for y in list2:
+            for z in list3:
+                assert mul(z, add(x, y)) == add(mul(z, x), mul(z, y))
 
 
 @pytest.mark.task0_2
@@ -140,7 +154,12 @@ def test_other() -> None:
     """
     Write a test that ensures some other property holds for your functions.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    # func:`minitorch.operators.add` is symmetric
+    list1 = [-1.79, -1, 0, 1, 1.79]
+    list2 = [-3.14, -2.28, 2.28, 3.14]
+    for a in list1:
+        for b in list2:
+            assert add(a, b) == add(b, a)
 
 
 # ## Task 0.3  - Higher-order functions
@@ -168,7 +187,7 @@ def test_sum_distribute(ls1: List[float], ls2: List[float]) -> None:
     Write a test that ensures that the sum of `ls1` plus the sum of `ls2`
     is the same as the sum of each element of `ls1` plus each element of `ls2`.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    assert_close(sum(ls1) + sum(ls2), sum(addLists(ls1, ls2)))
 
 
 @pytest.mark.task0_3
